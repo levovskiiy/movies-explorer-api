@@ -1,19 +1,21 @@
-import express from 'express';
-import mognoose from 'mongoose';
+import celebrate from 'celebrate';
+import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-
-import helmet from 'helmet';
-
-const DB_CONN = 'mongodb://localhost:27017/movies-explorer-db';
-const PORT = 5000;
+import express from 'express';
+import routes from './routes/index.js';
+import { errorsHandler, corsHandler, logger } from './middlewares/index.js';
 
 const app = express();
-
 app.use(helmet());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(corsHandler());
+app.use(logger.requestLogger);
+app.use(routes);
+app.use(logger.errorLogger);
+app.use(celebrate.errors);
+app.use(errorsHandler());
 
-mognoose.connect(DB_CONN);
-app.listen(PORT);
+export default app;
