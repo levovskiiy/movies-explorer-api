@@ -2,42 +2,32 @@ import ForbiddenError from '../exceptions/ForbiddenError.js';
 import NotFoundError from '../exceptions/NotFoundError.js';
 import Movie from '../models/movie.model.js';
 import { MOVIE_ERROR_MESSAGES } from '../utils/constants.js';
+import factory from '../utils/lib.js';
 
-class MovieService {
-  constructor(movieModel) {
-    this.model = movieModel;
+const get = ({ model }) => async () => {
+  const movies = await model.find({}).exec();
+
+  if (!movies) {
+    throw new NotFoundError(MOVIE_ERROR_MESSAGES.NOT_FOUND);
   }
 
-  /**
-   * Возвращает все сохраненные фильмы текущего пользователя
-   */
-  async get() {
-    const movies = await this.model.find({}).exec();
+  return movies;
+};
 
-    if (!movies) {
-      throw new NotFoundError(MOVIE_ERROR_MESSAGES.NOT_FOUND);
-    }
+const create = ({ model }) => async (movieData) => model.create(movieData);
 
-    return movies;
+const remove = ({ model }) => async ({ userId, movieId }) => {
+  const movie = await model.findById(movieId);
+
+  if (!movie) {
+    throw new NotFoundError(MOVIE_ERROR_MESSAGES.NOT_FOUND_BY_ID);
   }
 
-  /**
-   * Создает фильм в базе
-   */
-  async create(filmDetails) {
-    return this.model.create(filmDetails);
+  if (movie.owner.toString() !== userId) {
+    throw new ForbiddenError(MOVIE_ERROR_MESSAGES.ID_MISMATCH);
   }
 
-  /**
-   * Удаляет сохраненный фильм по id
-   */
-  async delete({ movieId, userId }) {
-    if (userId !== movieId) {
-      throw new ForbiddenError(MOVIE_ERROR_MESSAGES.ID_MISMATCH);
-    }
+  return movie.delete();
+};
 
-    return this.model.findByIdAndRemove(userId);
-  }
-}
-
-export default new MovieService(Movie);
+export default factory({ model: Movie }, { get, create, remove });

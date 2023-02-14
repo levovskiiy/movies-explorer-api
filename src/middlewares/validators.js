@@ -4,20 +4,21 @@ import {
 import mongoose from 'mongoose';
 import isURL from 'validator/lib/isURL.js';
 
-const raise = (exception) => {
-  throw exception;
-};
-
 const correctURL = Joi.string()
-  .custom((str) => (isURL(str, { require_protocol: true })
-    ? str
-    : raise(new CelebrateError('URL несоотвуствует шаблону'))
-  ));
+  .custom((str) => {
+    if (isURL(str, { require_protocol: true })) {
+      return str;
+    }
+    throw new CelebrateError('URL несоотвуствует шаблону');
+  });
 
-const correctObjectId = Joi.string()
-  .custom((id) => (
-    mongoose.isValidObjectId(id) ? id : raise(new CelebrateError('id несоотвуствует шаблону'))
-  ));
+const correctObjectId = Joi.string().alphanum().custom((value) => {
+  if (mongoose.isValidObjectId(value)) {
+    return value;
+  }
+
+  throw new CelebrateError('ID is not valid');
+});
 
 const required = (type) => Joi[type]()
   .required();
@@ -28,11 +29,7 @@ const validCredentials = {
   password: required('string'),
 };
 
-const createValidator = ({
-  schema,
-  segment,
-  isUnknown = true,
-}) => celebrate({
+const createValidator = ({ schema, segment }, isUnknown = true) => celebrate({
   [segment]: Joi.object()
     .keys(schema)
     .unknown(isUnknown),
@@ -63,7 +60,6 @@ export const validateMovieData = createValidator({
     image: correctURL.required(),
     trailerLink: correctURL.required(),
     thumbnai: correctURL.required(),
-    owner: correctObjectId.required(),
     movieid: required('number'),
   },
   segment: Segments.BODY,

@@ -4,7 +4,7 @@ config();
 
 export const {
   JWT_SECRET = 'DEV_MODE',
-  PORT = 5000,
+  PORT = 8000,
   DB_CONN = 'mongodb://localhost:27017/movies_explorer_db',
 } = process.env;
 

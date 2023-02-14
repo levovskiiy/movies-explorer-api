@@ -4,10 +4,7 @@ import { DB_CONN, PORT } from './config/config.js';
 
 (async () => {
   await mongoose.connect(DB_CONN);
-  app.use('/test', (req, res) => {
-    res.send('work');
-  });
-  app.listen(PORT, 'localhost', () => {
+  app.listen(PORT, () => {
     console.log('server started');
   });
 })();

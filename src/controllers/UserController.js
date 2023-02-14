@@ -1,38 +1,35 @@
 import mongoose from 'mongoose';
-import UserService from '../services/UserService.js';
+import userService from '../services/UserService.js';
 import BadRequestError from '../exceptions/BadRequestError.js';
+import ConflictError from '../exceptions/ConflictError.js';
+import factory from '../utils/lib.js';
 
-class UserController {
-  /**
-   *
-   * @param {UserService} service
-   */
-  constructor(service) {
-    this.service = service;
+const getUser = ({ service }) => async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    const currentUser = await service.get(id);
+
+    res.status(200).send(currentUser);
+  } catch (err) {
+    next(err instanceof mongoose.Error.CastError ? new BadRequestError(err.message) : err);
   }
+};
 
-  async getUser({ user }, res, next) {
-    try {
-      const currentUser = await this.service.get(user.id);
+const updateUser = ({ service }) => async (req, res, next) => {
+  try {
+    const { email, name } = req.body;
+    const { id } = req.user;
 
-      res.status(200).send(currentUser);
-    } catch (err) {
-      next(err instanceof mongoose.Error.CastError ? new BadRequestError(err.message) : err);
-    }
-  }
+    const updatedUser = await service.update({ email, name }, id);
 
-  async updateUser({ user, body }, res, next) {
-    try {
-      const { email, name } = body;
-      const { id } = user;
-
-      const updatedUser = await this.service.update({ email, name }, id);
-
-      res.status(200).send(updatedUser);
-    } catch (err) {
+    res.status(200).send(updatedUser);
+  } catch (err) {
+    if (err.code === 11000) {
+      next(new ConflictError('Данный email уже существует'));
+    } else {
       next(err instanceof mongoose.Error.ValidationError ? new BadRequestError(err.message) : err);
     }
   }
-}
+};
 
-export default new UserController(UserService);
+export default factory({ service: userService }, { getUser, updateUser });

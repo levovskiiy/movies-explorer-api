@@ -4,12 +4,14 @@
  * @param dependencyFns
  * @returns {{[p: string]: *}}
  */
-export const factory = (dependencies, dependencyFns) => {
+export default (dependencies, dependencyFns) => {
   const res = {};
 
-  for (const fnName in dependencyFns) {
-    res[fnName] = dependencyFns[fnName](dependencies);
-  }
+  const entries = Object.entries(dependencyFns);
+
+  entries.forEach(([fnName, fn]) => {
+    res[fnName] = fn(dependencies);
+  });
 
   return res;
 };

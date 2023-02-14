@@ -1,11 +1,11 @@
 import express from 'express';
-import accountController from '../controllers/AccountController.js';
+import account from '../controllers/AccountController.js';
 import { validators } from '../middlewares/index.js';
 
 const router = express.Router();
 
-router.post('/signup', validators.validateRegister, AccountController.registerUser);
-router.post('/singin', validators.validateLogin, AccountController.login);
+router.post('/signup', validators.validateRegister, account.registerUser);
+router.post('/signin', validators.validateLogin, account.login);
 router.get('/logout', (req, res) => res.clearCookie('jwt')
   .send({ message: 'logout' }));
 

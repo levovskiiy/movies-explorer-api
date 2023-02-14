@@ -1,13 +1,12 @@
 import mongoose from 'mongoose';
-import factory from '../utils/factory.js';
-import MovieService from '../services/MovieService.js';
+import factory from '../utils/lib.js';
+import movieService from '../services/MovieService.js';
 import BadRequestError from '../exceptions/BadRequestError.js';
 
 const getMovies = ({ service }) => async (req, res, next) => {
   try {
     const movies = await service.get();
-    res.status(200)
-      .send(movies);
+    res.status(200).send(movies);
   } catch (error) {
     next(error);
   }
@@ -15,10 +14,8 @@ const getMovies = ({ service }) => async (req, res, next) => {
 
 const createMovie = ({ service }) => async (req, res, next) => {
   try {
-    const createdMovie = await service.create(req.body);
-
-    res.status(200)
-      .send(createdMovie);
+    const createdMovie = await service.create({ ...req.body, owner: req.user.id });
+    res.status(200).send(createdMovie);
   } catch (error) {
     next(error instanceof mongoose.Error.ValidationError
       ? new BadRequestError(error.message)
@@ -26,71 +23,21 @@ const createMovie = ({ service }) => async (req, res, next) => {
   }
 };
 
-const deleteMovie = ({ service }) => async ({
-  params,
-  user
-}, res, next) => {
+const deleteMovie = ({ service }) => async (req, res, next) => {
   try {
-    const { movieId } = params;
-    const { id } = user;
+    const { movieId } = req.params;
+    const { id } = req.user;
 
-    const deletedMovie = await service.delete({
-      movieId,
-      userId: id
-    });
+    const deletedMovie = await service.remove({ movieId, userId: id });
 
-    res.status(200)
-      .send(deletedMovie);
+    res.status(200).send(deletedMovie);
   } catch (error) {
     next(error instanceof mongoose.Error.CastError ? new BadRequestError(error.message) : error);
   }
 };
 
-const movieController = factory({ MovieService }, {
+export default factory({ service: movieService }, {
   getMovies,
   createMovie,
-  deleteMovie
+  deleteMovie,
 });
-
-export default movieController;
-// class MovieController {
-//   constructor(movieSerivce) {
-//     this.service = movieSerivce;
-//   }
-//
-//   async getMovies(req, res, next) {
-//     try {
-//       const movies = await this.service.get();
-//       res.status(200).send(movies);
-//     } catch (error) {
-//       next(error);
-//     }
-//   }
-//
-//   async createMovie({ body }, res, next) {
-//     try {
-//       const createdMovie = await this.service.create(body);
-//
-//       res.status(200).send(createdMovie);
-//     } catch (error) {
-//       next(error instanceof mongoose.Error.ValidationError
-//         ? new BadRequestError(error.message)
-//         : error);
-//     }
-//   }
-//
-//   async deleteMovie({ params, user }, res, next) {
-//     try {
-//       const { movieId } = params;
-//       const { id } = user;
-//
-//       const deletedMovie = await this.service.delete({ movieId, userId: id });
-//
-//       res.status(200).send(deletedMovie);
-//     } catch (error) {
-//       next(error instanceof mongoose.Error.CastError ? new BadRequestError(error.message) : error);
-//     }
-//   }
-// }
-//
-// export default new MovieController(MovieService);

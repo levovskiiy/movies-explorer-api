@@ -42,8 +42,7 @@ User.statics.findUserByCredentials = async function findUserByCredentials({
   password,
 }) {
   const user = await this.findOne({ email })
-    .select('+password')
-    .lean();
+    .select('+password');
 
   if (!user) {
     throw new UnauthorizedError(AUTHORIZATION_ERROR_MESSAGES.INCORRECT_CREDENTIALS);
@@ -56,6 +55,12 @@ User.statics.findUserByCredentials = async function findUserByCredentials({
   }
 
   return user;
+};
+
+User.methods.deletePassword = function deletePassword() {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
 };
 
 export default mongoose.model('User', User);
