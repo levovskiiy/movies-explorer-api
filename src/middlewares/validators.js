@@ -52,6 +52,8 @@ export const validateLogin = createValidator({
 
 export const validateMovieData = createValidator({
   schema: {
+    nameRU: required('string'),
+    nameEN: required('string'),
     country: required('string'),
     director: required('string'),
     duration: required('number'),
@@ -59,8 +61,8 @@ export const validateMovieData = createValidator({
     description: required('string'),
     image: correctURL.required(),
     trailerLink: correctURL.required(),
-    thumbnai: correctURL.required(),
-    movieid: required('number'),
+    thumbnail: correctURL.required(),
+    movieId: required('number'),
   },
   segment: Segments.BODY,
 });
