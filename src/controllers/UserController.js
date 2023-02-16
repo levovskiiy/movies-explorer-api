@@ -3,6 +3,7 @@ import userService from '../services/UserService.js';
 import BadRequestError from '../exceptions/BadRequestError.js';
 import ConflictError from '../exceptions/ConflictError.js';
 import factory from '../utils/lib.js';
+import { USER_ERROR_MESSAGES } from '../utils/constants.js';
 
 const getUser = ({ service }) => async (req, res, next) => {
   try {
@@ -25,7 +26,7 @@ const updateUser = ({ service }) => async (req, res, next) => {
     res.status(200).send(updatedUser);
   } catch (err) {
     if (err.code === 11000) {
-      next(new ConflictError('Данный email уже существует'));
+      next(new ConflictError(USER_ERROR_MESSAGES.EMAIL_ALREADY_EXIST));
     } else {
       next(err instanceof mongoose.Error.ValidationError ? new BadRequestError(err.message) : err);
     }
