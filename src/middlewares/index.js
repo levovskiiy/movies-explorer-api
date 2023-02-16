@@ -6,5 +6,5 @@ import rateLimit from './rateLimit.js';
 import * as validators from './validators.js';
 
 export {
-  logger, authentication, corsHandler, errorsHandler, validators, rateLimit
+  logger, authentication, corsHandler, errorsHandler, validators, rateLimit,
 };

@@ -5,4 +5,4 @@ export default class BadRequestError extends Error {
     super(msg);
     this.statusCode = HTTP_ERROR.BAD_REQUEST.code;
   }
-};
+}

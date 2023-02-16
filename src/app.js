@@ -4,7 +4,9 @@ import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import express from 'express';
 import routes from './routes/index.js';
-import { errorsHandler, corsHandler, logger, rateLimit } from './middlewares/index.js';
+import {
+  errorsHandler, corsHandler, logger, rateLimit,
+} from './middlewares/index.js';
 
 const app = express();
 app.use(helmet());
