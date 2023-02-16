@@ -5,7 +5,8 @@ import BadRequestError from '../exceptions/BadRequestError.js';
 
 const getMovies = ({ service }) => async (req, res, next) => {
   try {
-    const movies = await service.get();
+    const { id } = req.user;
+    const movies = await service.get(id);
     res.status(200).send(movies);
   } catch (error) {
     next(error);

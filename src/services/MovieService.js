@@ -4,9 +4,7 @@ import Movie from '../models/movie.model.js';
 import { MOVIE_ERROR_MESSAGES } from '../utils/constants.js';
 import factory from '../utils/lib.js';
 
-const get = ({ model }) => async () => {
-  return model.find({}).exec();
-};
+const get = ({ model }) => async (owner) => model.find({ owner }).exec();
 
 const create = ({ model }) => async (movieData) => model.create(movieData);
 

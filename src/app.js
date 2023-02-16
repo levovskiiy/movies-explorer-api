@@ -16,7 +16,7 @@ app.use(rateLimit);
 app.use(logger.requestLogger);
 app.use(routes);
 app.use(logger.errorLogger);
-app.use(celebrate.errors);
+app.use(celebrate.errors());
 app.use(errorsHandler());
 
 export default app;
