@@ -10,5 +10,13 @@ export const {
 
 export const EXPIRES_JWT = '7d';
 
-export const ALLOWED_DOMAINS = ['localhost', 'api.moviesapp.nomoredomains.work'];
+export const ALLOWED_DOMAINS = ['*'];
+
 export const ALLOWED_METHODS = ['GET', 'POST', 'PATCH', 'POST', 'DELETE', 'OPTIONS'];
+
+export const corsOptions = {
+  origin: ALLOWED_DOMAINS,
+  methods: ALLOWED_METHODS,
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
