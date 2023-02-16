@@ -5,7 +5,7 @@ config();
 export const {
   JWT_SECRET = 'DEV_MODE',
   PORT = 8000,
-  DB_CONN = 'mongodb://localhost:27017/movies_explorer_db',
+  DB_CONN = 'mongodb://localhost:27017/bitfilmsdb',
 } = process.env;
 
 export const EXPIRES_JWT = '7d';
