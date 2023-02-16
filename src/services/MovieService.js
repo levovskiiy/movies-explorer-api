@@ -5,13 +5,7 @@ import { MOVIE_ERROR_MESSAGES } from '../utils/constants.js';
 import factory from '../utils/lib.js';
 
 const get = ({ model }) => async () => {
-  const movies = await model.find({}).exec();
-
-  if (!movies) {
-    throw new NotFoundError(MOVIE_ERROR_MESSAGES.NOT_FOUND);
-  }
-
-  return movies;
+  return model.find({}).exec();
 };
 
 const create = ({ model }) => async (movieData) => model.create(movieData);
